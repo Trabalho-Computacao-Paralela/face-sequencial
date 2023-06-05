@@ -1,0 +1,3 @@
+/home/digitro/test/CMakeFiles/DisplayImage.dir
+/home/digitro/test/CMakeFiles/edit_cache.dir
+/home/digitro/test/CMakeFiles/rebuild_cache.dir
