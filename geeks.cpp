@@ -3,10 +3,12 @@
 #include "/usr/local/include/opencv4/opencv2/imgproc.hpp"
 #include <opencv2/core/types_c.h>
 #include <iostream>
+#include <omp.h>
 
 using namespace std;
 using namespace cv;
 
+// Function for Face Detection
 void detectAndDraw( Mat& img, CascadeClassifier& cascade,
 				CascadeClassifier& nestedCascade, double scale );
 string cascadeName, nestedCascadeName;
@@ -34,7 +36,6 @@ int main( int argc, const char** argv )
 			detectAndDraw( frame1, cascade, nestedCascade, scale );
 			char c = (char)waitKey(10);
 		
-			#pragma omp atomic
 			if( c == 27 || c == 'q' || c == 'Q' )
 				break;
 		}
@@ -57,7 +58,6 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nes
     cascade.detectMultiScale( smallImg, faces, 1.1,
                             2, 0|CASCADE_SCALE_IMAGE, Size(30, 30) );
 
-    #pragma omp parallel for
     for ( size_t i = 0; i < faces.size(); i++ ) {
         Rect r = faces[i];
         Mat smallImgROI;
@@ -84,11 +84,13 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nes
         nestedCascade.detectMultiScale( smallImgROI, nestedObjects, 1.1, 2,
                                         0|CASCADE_SCALE_IMAGE, Size(30, 30) );
         
+		#pragma omp parallel for
         for ( size_t j = 0; j < nestedObjects.size(); j++ ) {
             Rect nr = nestedObjects[j];
             center.x = cvRound((r.x + nr.x + nr.width*0.5)*scale);
             center.y = cvRound((r.y + nr.y + nr.height*0.5)*scale);
             radius = cvRound((nr.width + nr.height)*0.25*scale);
+			#pragma omp critical
             circle( img, center, radius, color, 3, 8, 0 );
         }
     }
