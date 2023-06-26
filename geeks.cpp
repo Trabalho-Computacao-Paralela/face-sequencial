@@ -10,11 +10,13 @@ using namespace cv;
 
 // Function for Face Detection
 void detectAndDraw( Mat& img, CascadeClassifier& cascade,
-				CascadeClassifier& nestedCascade, double scale );
+				CascadeClassifier& nestedCascade, double scale, double start );
 string cascadeName, nestedCascadeName;
 
 int main( int argc, const char** argv )
 {
+	double start;
+	start = omp_get_wtime(); 
 	VideoCapture capture;
 	Mat frame, image;
 
@@ -33,7 +35,7 @@ int main( int argc, const char** argv )
 			if( frame.empty() )
 				break;
 			Mat frame1 = frame.clone();
-			detectAndDraw( frame1, cascade, nestedCascade, scale );
+			detectAndDraw( frame1, cascade, nestedCascade, scale, start );
 			char c = (char)waitKey(10);
 		
 			if( c == 27 || c == 'q' || c == 'Q' )
@@ -45,7 +47,7 @@ int main( int argc, const char** argv )
 	return 0;
 }
 
-void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nestedCascade, double scale) {
+void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nestedCascade, double scale, double start) {
     vector<Rect> faces, faces2;
     Mat gray, smallImg;
 
@@ -90,8 +92,11 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nes
             center.x = cvRound((r.x + nr.x + nr.width*0.5)*scale);
             center.y = cvRound((r.y + nr.y + nr.height*0.5)*scale);
             radius = cvRound((nr.width + nr.height)*0.25*scale);
+			double end;
+			end = omp_get_wtime(); 
 			#pragma omp critical
             circle( img, center, radius, color, 3, 8, 0 );
+			printf("Tempo: %f\n", end - start);
         }
     }
 
