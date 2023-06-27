@@ -86,7 +86,6 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nes
         nestedCascade.detectMultiScale( smallImgROI, nestedObjects, 1.1, 2,
                                         0|CASCADE_SCALE_IMAGE, Size(30, 30) );
         
-		#pragma omp parallel for
         for ( size_t j = 0; j < nestedObjects.size(); j++ ) {
             Rect nr = nestedObjects[j];
             center.x = cvRound((r.x + nr.x + nr.width*0.5)*scale);
@@ -94,7 +93,6 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nes
             radius = cvRound((nr.width + nr.height)*0.25*scale);
 			double end;
 			end = omp_get_wtime(); 
-			#pragma omp critical
             circle( img, center, radius, color, 3, 8, 0 );
 			printf("Tempo: %f\n", end - start);
         }
