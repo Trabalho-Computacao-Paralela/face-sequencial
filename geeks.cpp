@@ -3,8 +3,8 @@
 #include "/usr/local/include/opencv4/opencv2/imgproc.hpp"
 #include <opencv2/core/types_c.h>
 #include <iostream>
+#include <unistd.h>
 #include <omp.h>
-
 using namespace std;
 using namespace cv;
 
@@ -23,9 +23,10 @@ int main( int argc, const char** argv )
 	CascadeClassifier cascade, nestedCascade;
 	double scale=1;
 
-	nestedCascade.load( "/home/digitro/opencv/data/haarcascades/haarcascade_eye_tree_eyeglasses.xml" ) ;
-
-	cascade.load( "/home/digitro/opencv/data/haarcascades/haarcascade_frontalface_default.xml" ) ;
+	std::string currentDir = getcwd(nullptr, 0);
+	
+	nestedCascade.load(currentDir + "/data/haarcascade/haarcascade_eye_tree_eyeglasses.xml" ) ;
+	cascade.load( currentDir + "/data/haarcascade/haarcascade_frontalface_alt.xml" ) ;
 
 	capture.open(0);
 	if( capture.isOpened() ){
