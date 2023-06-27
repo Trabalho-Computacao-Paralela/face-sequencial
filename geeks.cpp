@@ -85,7 +85,7 @@ void detectAndDraw( Mat& img, CascadeClassifier& cascade, CascadeClassifier& nes
         
         nestedCascade.detectMultiScale( smallImgROI, nestedObjects, 1.1, 2,
                                         0|CASCADE_SCALE_IMAGE, Size(30, 30) );
-        omp_set_num_threads(4);
+        omp_set_num_threads(3);
 		#pragma omp parallel for
         for ( size_t j = 0; j < nestedObjects.size(); j++ ) {
             Rect nr = nestedObjects[j];
